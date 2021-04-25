@@ -250,6 +250,10 @@ class RNPhotosFramework {
     return RNPFManager.deleteAssets(assets.map(asset => asset.localIdentifier));
   }
 
+  cacheAssets(assetsToStartCaching, assetsToStopCaching, params) {
+    return RNPFManager.cacheAssets(assetsToStartCaching, assetsToStopCaching, params);
+  }
+
   deleteAlbums(albums) {
     return RNPFManager.deleteAlbums(albums.map(album => album.localIdentifier));
   }

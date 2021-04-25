@@ -151,6 +151,9 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     BOOL assetDisplayStartToEnd = [RCTConvert BOOL:params[@"assetDisplayStartToEnd"]];
     BOOL assetDisplayBottomUp = [RCTConvert BOOL:params[@"assetDisplayBottomUp"]];
     NSArray<PHAssetWithCollectionIndex *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex assetDisplayStartToEnd:assetDisplayStartToEnd andAssetDisplayBottomUp:assetDisplayBottomUp];
+
+	NSLog(@"prepareAssetsForDisplayWithParams 1 %@.", params);
+
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
     NSInteger assetCount = assetsFetchResult.count;
     BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);
@@ -198,6 +201,54 @@ RCT_EXPORT_METHOD(deleteAssets:(NSArray *)localIdentifiers
         return reject(@"Error removing assets", nil, error);
     }];
     
+}
+
+/*
+ CacheAssets
+ */
+
+#pragma mark - CacheAssets
+
+
+RCT_EXPORT_METHOD(cacheAssets:(NSArray *)assetLocalIdentifiersToStartCaching
+                  assetLocalIdentifiersToStopCaching:(NSArray *)assetLocalIdentifiersToStopCaching
+				  params: (NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if ((assetLocalIdentifiersToStartCaching == nil || assetLocalIdentifiersToStartCaching.count == 0) && (assetLocalIdentifiersToStopCaching == nil || assetLocalIdentifiersToStopCaching.count == 0)) {
+        return resolve(@{@"localIdentifiers" : @[], @"success" : @((BOOL)true)});
+    }
+    PHFetchResult<PHAsset *> * assetsToStartCachingFetch = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:assetLocalIdentifiersToStartCaching];
+    
+    NSMutableArray<PHAssetWithCollectionIndex *> *assetsToStartCaching = [NSMutableArray new];
+    int assetsToStartCachingCount = (int)assetsToStartCachingFetch.count;
+
+	// [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:[NSNumber numberWithInt:i]]];
+
+
+	for (int i = 0; i < assetsToStartCachingCount; i++) {
+		PHAsset *asset = [assetsToStartCachingFetch objectAtIndex:i];
+		[assetsToStartCaching addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:[NSNumber numberWithInt:i]]];
+	}
+    
+    
+	PHFetchResult<PHAsset *> * assetsToStopCachingFetch = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:assetLocalIdentifiersToStopCaching];
+    NSMutableArray<PHAssetWithCollectionIndex *> *assetsToStopCaching = [NSMutableArray new];
+    int assetsToStopCachingCount = (int)assetsToStopCachingFetch.count;
+
+	for (int i = 0; i < assetsToStopCachingCount; i++) {
+		PHAsset *asset = [assetsToStopCachingFetch objectAtIndex:i];
+		[assetsToStartCaching addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:[NSNumber numberWithInt:i]]];
+	}
+
+	if (assetsToStartCaching.count != 0) {
+		[self prepareAssetsForDisplayWithParams:params andAssets:assetsToStartCaching];
+	} 
+	if (assetsToStopCaching.count != 0) {
+		[self unprepareAssetsForDisplayWithParams:params andAssets:assetsToStopCaching];
+	}
+    return resolve(@{@"assetsToStartCaching" : assetsToStartCaching, @"assetsToStopCaching" : assetsToStopCaching });
 }
 
 
@@ -870,6 +921,9 @@ RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
 #pragma mark - Helpers
 -(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAssetWithCollectionIndex *> *)assets {
     NSString *prepareProp = params[@"prepareForSizeDisplay"];
+	NSLog(@"prepareAssetsForDisplayWithParams %@%@.", prepareProp, assets);
+
+
     if(prepareProp != nil) {
         CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
         CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
@@ -880,6 +934,25 @@ RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
                 prepareScale = 2;
             }
             [cacheManager startCachingImagesForAssets:[PHAssetWithCollectionIndex toAssetsArray:assets] targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
+        }
+    }
+}
+
+-(void) unprepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAssetWithCollectionIndex *> *)assets {
+    NSString *prepareProp = params[@"prepareForSizeDisplay"];
+	NSLog(@"unprepareAssetsForDisplayWithParams %@%@.", prepareProp, assets);
+
+
+    if(prepareProp != nil) {
+        CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
+        CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
+        PHCachingImageManager *cacheManager = [PHCachingImageManagerInstance sharedCachingManager];
+        
+        if(prepareForSizeDisplay.width != 0 && prepareForSizeDisplay.height != 0) {
+            if(prepareScale < 0.1) {
+                prepareScale = 2;
+            }
+            [cacheManager stopCachingImagesForAssets:[PHAssetWithCollectionIndex toAssetsArray:assets] targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
         }
     }
 }

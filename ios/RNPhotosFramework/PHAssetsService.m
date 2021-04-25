@@ -79,6 +79,7 @@
                                              [asset localIdentifier], @"localIdentifier",
                                              @([asset pixelWidth]), @"width",
                                              @([asset pixelHeight]), @"height",
+                                             @([RNPFHelpers getTimeSince1970:[asset creationDate]]), @"creationDateUTCSeconds",
                                              [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",
                                              assetIndex, @"collectionIndex",
                                              nil];
@@ -152,7 +153,7 @@
         [arrayWithResourcesMetadata addObject:@{
                                                      @"originalFilename" : resourceMetadata.originalFilename,
                                                      @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
-													 @"fileSize": [resourceMetadata valueForKey:@"fileSize"],
+													 @"fileSize": [asset valueForKey:@"fileSize"],
                                                      @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
                                                      @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
                                                      @"mimeType" : mimeType,

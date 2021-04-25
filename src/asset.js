@@ -42,6 +42,7 @@ export default class Asset {
     }
 
     get creationDate() {
+		console.log('[creationDate]', { d: this });
         return this.toJsDate('creationDateUTCSeconds', '_creationDate');
     }
 
