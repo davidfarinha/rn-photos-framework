@@ -153,7 +153,7 @@
         [arrayWithResourcesMetadata addObject:@{
                                                      @"originalFilename" : resourceMetadata.originalFilename,
                                                      @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
-													 @"fileSize": [asset valueForKey:@"fileSize"],
+													 @"fileSize": [resourceMetadata valueForKey:@"fileSize"],
                                                      @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
                                                      @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
                                                      @"mimeType" : mimeType,
