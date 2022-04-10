@@ -104,7 +104,8 @@ class RNPhotosFramework {
     return RNPFManager.getAssets(params).then(assetsResponse => {
       return {
         assets: assetsResponse.assets.map(this.createJsAsset),
-        includesLastAsset: assetsResponse.includesLastAsset
+        includesLastAsset: assetsResponse.includesLastAsset,
+		assetCount: assetsResponse.assetCount
       };
     });
   }
@@ -310,7 +311,7 @@ class RNPhotosFramework {
       onProgress
     );
     return RNPFManager.createAssets(args).then(result => {
-      unsubscribe && this.nativeEventEmitter.removeListener(unsubscribe);
+		unsubscribe?.remove();
       return result.assets.map(this.createJsAsset);
     });
   }

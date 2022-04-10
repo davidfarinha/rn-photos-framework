@@ -80,6 +80,9 @@
                                              @([asset pixelWidth]), @"width",
                                              @([asset pixelHeight]), @"height",
                                              @([RNPFHelpers getTimeSince1970:[asset creationDate]]), @"creationDateUTCSeconds",
+											 // [30/11/21]: TODO: Adding in isFavourite here, but this may affect performance. But implement a separarte flag in the getAsset options for partial scan r full scan. If partial scan, make this asset obkect as lean as possible stripping out
+											 //				as many fields to improce partial scan performance. If it's a full scan, include them.
+											 @([asset isFavorite]), @"isFavorite",
                                              [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",
                                              assetIndex, @"collectionIndex",
                                              nil];

@@ -159,7 +159,8 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);
     return resolve(@{
                      @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata],
-                     @"includesLastAsset" : @(includesLastAsset)
+                     @"includesLastAsset" : @(includesLastAsset),
+					 @"assetCount" : @(assetCount),
                      });
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }

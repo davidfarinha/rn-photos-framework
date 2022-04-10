@@ -58,12 +58,12 @@ export default class AwesomeProject extends Component {
   constructor() {
     super();
     this.state = {
-      images: []
+      images: [],
     };
   }
 
   componentDidMount() {
-    RNPhotosFramework.requestAuthorization().then(statusObj => {
+    RNPhotosFramework.requestAuthorization().then((statusObj) => {
       if (statusObj.isAuthorized) {
         RNPhotosFramework.getAlbums({
           type: "smartAlbum",
@@ -73,18 +73,18 @@ export default class AwesomeProject extends Component {
             sortDescriptors: [
               {
                 key: "title",
-                ascending: true
-              }
+                ascending: true,
+              },
             ],
             includeHiddenAssets: false,
-            includeAllBurstAssets: false
+            includeAllBurstAssets: false,
           },
           //When you say 'trackInsertsAndDeletes or trackChanges' for an albums query result,
           //They will be cached and tracking will start.
           //Call queryResult.stopTracking() to stop this. ex. on componentDidUnmount
           trackInsertsAndDeletes: true,
-          trackChanges: false
-        }).then(queryResult => {
+          trackChanges: false,
+        }).then((queryResult) => {
           const album = queryResult.albums[0];
           return album
             .getAssets({
@@ -95,11 +95,11 @@ export default class AwesomeProject extends Component {
               //They will be cached and tracking will start.
               //Call album.stopTracking() to stop this. ex. on componentDidUnmount
               trackInsertsAndDeletes: true,
-              trackChanges: false
+              trackChanges: false,
             })
-            .then(response => {
+            .then((response) => {
               this.setState({
-                images: response.assets
+                images: response.assets,
               });
             });
         });
@@ -131,18 +131,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5FCFF"
+    backgroundColor: "#F5FCFF",
   },
   welcome: {
     fontSize: 20,
     textAlign: "center",
-    margin: 10
+    margin: 10,
   },
   instructions: {
     textAlign: "center",
     color: "#333333",
-    marginBottom: 5
-  }
+    marginBottom: 5,
+  },
 });
 
 AppRegistry.registerComponent("AwesomeProject", () => AwesomeProject);
@@ -225,11 +225,11 @@ RNPhotosFramework.getAssets({
     sortDescriptors: [
       {
         key: "creationDate",
-        ascending: true
-      }
-    ]
-  }
-}).then(response => console.log(response.assets));
+        ascending: true,
+      },
+    ],
+  },
+}).then((response) => console.log(response.assets));
 ```
 
 ###### Props to `getAssets`
@@ -241,7 +241,7 @@ RNPhotosFramework.getAssets({
 | endIndex                 |    0    |       `number`        | endIndex-offset stop for fetching                                                                                                                                                                                    |
 | includeMetadata          |  false  |       `boolean`       | Include a lot of metadata about the asset (See below). You can also choose to get this metaData at a later point by calling `asset.getMetadata()` (See below)                                                        |
 | includeResourcesMetadata |  false  |       `boolean`       | Include metadata about the orginal resources that make up the asset. Like type and original filename. You can also choose to get this metaData at a later point by calling `asset.getResourcesMetadata()`.           |
-| prepareForSizeDisplay    |    -    | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
+|                          |    -    | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale             |   2.0   |       `number`        | The scale to prepare the image in.                                                                                                                                                                                   |
 | assetDisplayStartToEnd   |  false  |       `boolean`       | Retrieves assets from the beginning of the library when set to true. Using this sorting option preserves the native order of assets as they are viewed in the Photos app.                                            |
 | assetDisplayBottomUp     |  false  |       `boolean`       | Used to arrange assets from the bottom to top of screen when scrolling up to view paginated results.                                                                                                                 |
@@ -277,18 +277,18 @@ RNPhotosFramework.getAlbums({
     sortDescriptors: [
       {
         key: "title",
-        ascending: true
-      }
+        ascending: true,
+      },
     ],
     includeHiddenAssets: false,
-    includeAllBurstAssets: false
+    includeAllBurstAssets: false,
   },
   //When you say 'trackInsertsAndDeletes or trackChanges' for an albums query result,
   //They will be cached and tracking will start.
   //Call queryResult.stopTracking() to stop this. ex. on componentDidUnmount
   trackInsertsAndDeletes: true,
-  trackChanges: false
-}).then(queryResult => {
+  trackChanges: false,
+}).then((queryResult) => {
   const album = queryResult.albums[0];
   return album
     .getAssets({
@@ -299,9 +299,9 @@ RNPhotosFramework.getAlbums({
       //They will be cached and tracking will start.
       //Call album.stopTracking() to stop this. ex. on componentDidUnmount
       trackInsertsAndDeletes: true,
-      trackChanges: false
+      trackChanges: false,
     })
-    .then(response => {
+    .then((response) => {
       console.log(response.assets, "The assets in the first album");
     });
 });
@@ -359,9 +359,9 @@ RNPhotosFramework.getAlbumsCommon(params)
 ### createAlbum
 
 ```js
-RNPhotosFramework.createAlbum("test-album").then(album => {
+RNPhotosFramework.createAlbum("test-album").then((album) => {
   //You can now use the album like any other album:
-  return album.getAssets().then(photos => {});
+  return album.getAssets().then((photos) => {});
 });
 ```
 
@@ -375,7 +375,7 @@ localIdentifier. You can use the below methods to tackle this:
 ### getAlbumsByTitle
 
 ```js
-RNPhotosFramework.getAlbumsByTitle("test-album").then(albums => {});
+RNPhotosFramework.getAlbumsByTitle("test-album").then((albums) => {});
 ```
 
 Signature: RNPhotosFramework.getAlbumsByTitle(albumTitle) : Promise<array<album>>.
@@ -387,7 +387,9 @@ Signature: RNPhotosFramework.getAlbumsWithParams({albumTitles, ...otherThingLike
 ### getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
 
 ```js
-RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier).then(album => {});
+RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier).then(
+  (album) => {}
+);
 ```
 
 Signature: RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier) : Promise<album>.
@@ -398,7 +400,7 @@ All alums carry their localIdentifier on album.localIdentifier.
 ### addAssetToAlbum and addAssetsToAlbum
 
 ```js
-album.addAssetToAlbum(asset).then(status => {});
+album.addAssetToAlbum(asset).then((status) => {});
 ```
 
 Signature: album.addAssetToAlbum(asset) : Promise<status>.
@@ -409,7 +411,7 @@ If you have a image that you want to save to the library see createAsset.
 ### removeAssetFromAlbum and removeAssetsFromAlbum
 
 ```js
-album.removeAssetFromAlbum(asset).then(status => {});
+album.removeAssetFromAlbum(asset).then((status) => {});
 ```
 
 Signature: album.removeAssetFromAlbum(asset) : Promise<status>.
@@ -420,7 +422,7 @@ If you have a image that you want to save to the library see createAsset.
 ### updateTitle
 
 ```js
-album.updateTitle(newTitle).then(status => {});
+album.updateTitle(newTitle).then((status) => {});
 ```
 
 Signature: album.updateTitle(string) : Promise<status>.
@@ -429,7 +431,7 @@ Change title on an album.
 ### delete
 
 ```js
-album.delete().then(status => {});
+album.delete().then((status) => {});
 ```
 
 Signature: album.delete() : Promise<status>.
@@ -438,7 +440,7 @@ Delete an album.
 ### getMetadata
 
 ```js
-album.getMetadata().then(mutatedAlbumWithMetadata => {});
+album.getMetadata().then((mutatedAlbumWithMetadata) => {});
 ```
 
 Fetch meta data for a specific album. You can also include metadata on all albums in the first `getAlbum`-call
@@ -460,7 +462,7 @@ These are methods and options that apply to all kinds of assets.
 #### setHidden
 
 ```js
-asset.setHidden(hiddenBoolean).then(resultOfOperation => {});
+asset.setHidden(hiddenBoolean).then((resultOfOperation) => {});
 ```
 
 Hides or un-hides a specific asset. Will prompt the user when an asset is about to be hidden.
@@ -468,7 +470,7 @@ Hides or un-hides a specific asset. Will prompt the user when an asset is about 
 #### setFavorite
 
 ```js
-asset.setFavorite(favoriteBoolean).then(resultOfOperation => {});
+asset.setFavorite(favoriteBoolean).then((resultOfOperation) => {});
 ```
 
 Marks/Unmarks the asset as favorite.
@@ -476,7 +478,7 @@ Marks/Unmarks the asset as favorite.
 #### setCreationDate
 
 ```js
-asset.setCreationDate(jsDate).then(resultOfOperation => {});
+asset.setCreationDate(jsDate).then((resultOfOperation) => {});
 ```
 
 Updates the assets creationDate.
@@ -501,7 +503,7 @@ Updates the assets location.
 #### getMetadata
 
 ```js
-asset.getMetadata().then(mutatedAssetWithMetadata => {});
+asset.getMetadata().then((mutatedAssetWithMetadata) => {});
 ```
 
 Fetch metadata for a specific asset. You can also include metadata on all assets in the first `getAsset`-call by explicitly setting option `includeMetadata: true`.
@@ -509,7 +511,7 @@ Fetch metadata for a specific asset. You can also include metadata on all assets
 #### getResourcesMetadata
 
 ```js
-asset.getResourcesMetadata().then(mutatedAssetWithResourcesMetadata => {
+asset.getResourcesMetadata().then((mutatedAssetWithResourcesMetadata) => {
   console.log(mutatedAssetWithResourcesMetadata.resourcesMetadata);
 });
 ```
@@ -529,7 +531,7 @@ If you choose to NOT use `Change-Tracking` you can call `refreshMetadata` on the
 after your update-operation:
 
 ```js
-asset.setHidden(hiddenBoolean).then(resultOfOperation => {
+asset.setHidden(hiddenBoolean).then((resultOfOperation) => {
   asset.refreshMetadata().then(() => {
     console.log("The JS-asset should now reflect your changes");
   });
@@ -554,7 +556,7 @@ RNPhotosFramework.updateAssets({
 #### delete
 
 ```js
-asset.delete().then(status => {});
+asset.delete().then((status) => {});
 ```
 
 Delete asset.
@@ -571,7 +573,7 @@ RN will freeze your asset object. And they are, right now at least, mutable.
 #### getImageMetadata
 
 ```js
-asset.getImageMetadata().then(mutatedAssetWithImageMetadata => {
+asset.getImageMetadata().then((mutatedAssetWithImageMetadata) => {
   console.log(mutatedAssetWithResourcesMetadata.imageMetadata);
 });
 ```
@@ -601,7 +603,7 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
 ```js
 const assetWithNewDeliveryMode = asset.withOptions({
   //one of opportunistic|highQuality|fast
-  deliveryMode: "opportunistic"
+  deliveryMode: "opportunistic",
 });
 ```
 
@@ -630,7 +632,7 @@ or add : `"react-native-video": "git://github.com/olofd/react-native-video.git#r
 ```jsx
 <Video
   source={this.props.asset.video} //Use the asset.video-property.
-  ref={ref => {
+  ref={(ref) => {
     this.player = ref;
   }}
   resizeMode="cover"
@@ -657,7 +659,7 @@ For more info on supported properties see:
 
 ```js
 const assetWithNewDeliveryMode = asset.withOptions({
-  deliveryMode: "mediumQuality"
+  deliveryMode: "mediumQuality",
 });
 ```
 
@@ -729,7 +731,7 @@ The simplest way of doing this is by doing it the good old way:
 const photo = {
   uri: asset.uri,
   type: "image/jpeg",
-  name: "photo.jpg"
+  name: "photo.jpg",
 };
 
 const body = new FormData();
@@ -763,14 +765,14 @@ const ajaxPromise = postAssets(assets, {
   onError: (asset, status, responseText, xhr) => {
     console.log("Asset upload failed");
   },
-  onFinnished: completedItems => {
+  onFinnished: (completedItems) => {
     console.log("Operation complete");
   },
   modifyAssetData: (postableAsset, asset) => {
     postableAsset.name = `${postableAsset.name}-special-name-maybe-guid.jpg`;
     return postableAsset;
-  }
-}).then(result => {
+  },
+}).then((result) => {
   console.log("Operation complete, promise resolved", result);
   return result;
 });
@@ -801,7 +803,7 @@ You currently receive the following events: `AlbumTitleChanged` (More to come).
 ```js
 const unsubscribeFunc = albumsFetchResult.onChange((changeDetails, update) => {
   if (changeDetails.hasIncrementalChanges) {
-    update(updatedFetchResult => {
+    update((updatedFetchResult) => {
       this.setState({ albumsFetchResult: updatedFetchResult });
     });
   } else {
@@ -828,16 +830,16 @@ const unsubscribeFunc = album.onChange((changeDetails, update) => {
     //Important! Assets must be supplied in original fetch-order.
     update(
       this.state.assets,
-      updatedAssetArray => {
+      (updatedAssetArray) => {
         this.setState({
-          assets: updatedAssetArray
+          assets: updatedAssetArray,
         });
       },
       //If RNPF needs to retrive more assets to complete the change,
       //eg. a move happened that moved a previous out of array-index asset into your corrently loaded assets.
       //Here you can apply a param obj for options on how to load those assets. eg. ´includeMetadata : true´.
       {
-        includeMetadata: true
+        includeMetadata: true,
       }
     );
   } else {

@@ -163,8 +163,8 @@ export default class Album extends EventEmitter {
   }
 
   onChange(cb) {
-    this.addListener("onChange", cb);
-    return () => this.removeListener("onChange", cb);
+    const onChangeListener = this.addListener("onChange", cb);
+    return () => onChangeListener?.remove();
   }
 
   _emitChange(...args) {

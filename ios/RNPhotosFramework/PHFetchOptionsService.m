@@ -71,10 +71,28 @@
     for(int i = 0; i < customPredicates.count; i++) {
         NSDictionary *predicateObj = [RCTConvert NSDictionary:[customPredicates objectAtIndex:i]];
         NSString *predicate = [predicateObj objectForKey:@"predicate"];
-        if(predicate != nil) {
+          if(predicate != nil) {
             NSString *argument = [predicateObj objectForKey:@"predicateArg"];
-            [nsPredicates addObject:[NSPredicate predicateWithFormat:predicate, argument]];
+			NSString *argument2 = [predicateObj objectForKey:@"predicateArg2"];
+			NSString *argument3 = [predicateObj objectForKey:@"predicateArg3"];
+
+            NSDateFormatter* df = [[NSDateFormatter alloc]init];
+            [df setTimeZone:[NSTimeZone localTimeZone]];
+            [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+            if ([predicate rangeOfString:@"creationDate"].location == NSNotFound) {
+                
+                
+                [nsPredicates addObject:[NSPredicate predicateWithFormat:predicate, [argument integerValue]]];
+            } else {
+                NSDate *date = [df dateFromString:argument];
+				NSDate *date2 = [df dateFromString:argument2];
+                
+                [nsPredicates addObject:[NSPredicate predicateWithFormat:predicate, date, date2, [argument3 integerValue]]];
+            }
+           
         }
+
+		
     }
     return [NSCompoundPredicate andPredicateWithSubpredicates:nsPredicates];
 

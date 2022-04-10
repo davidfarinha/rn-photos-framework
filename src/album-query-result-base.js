@@ -38,7 +38,7 @@ export default class AlbumQueryResultBase extends EventEmitter {
   }
 
   onChange(changeHandler) {
-    this.addListener("onChange", changeHandler);
-    return () => this.removeListener("onChange", changeHandler);
+    const onChangeListener = this.addListener("onChange", changeHandler);
+    return () => onChangeListener?.remove();
   }
 }
