@@ -36,7 +36,7 @@ export default class Asset {
     static scheme = "photos://";
     constructor(assetObj) {
         Object.assign(this, assetObj);
-        this._assetObj = assetObj;
+        // this._assetObj = assetObj;
     }
 
     // get uri() {
@@ -122,9 +122,7 @@ export default class Asset {
                     // This seems to fix 'Cannot assign to a reasonly object' strange rrors. Step 1) use r = Object.assign({}, this, extraProps) instead of  Object.assign(this, extraProps). and don't assign to 'this', use the return value of Object.assign and return that!
                     let r = this;
                     if (metadataObjs && metadataObjs[this.localIdentifier]) {
-                        console.log('[ren 1]', metadataObjs[this.localIdentifier]);
                         r = Object.assign({}, this, metadataObjs[this.localIdentifier]);
-                        console.log('[ren 2]', r.resourcesMetadata, metadataObjs[this.localIdentifier].resourcesMetadata);
                     }
                     return r;
                 }));

@@ -100,7 +100,9 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetCollectionSubtype, (@{
                                                 @"smartAlbumSelfPortraits": @(PHAssetCollectionSubtypeSmartAlbumSelfPortraits),
                                                 @"smartAlbumScreenshots": @(PHAssetCollectionSubtypeSmartAlbumScreenshots),
                                                 @"smartAlbumDepthEffect" : @(PHAssetCollectionSubtypeSmartAlbumDepthEffect),
-                                                @"smartAlbumLivePhotos" : @(PHAssetCollectionSubtypeSmartAlbumLivePhotos)
+                                                @"smartAlbumLivePhotos" : @(PHAssetCollectionSubtypeSmartAlbumLivePhotos),
+                                                @"smartAlbumLongExposures" : @(PHAssetCollectionSubtypeSmartAlbumLongExposures),
+                                                @"smartAlbumAnimated" : @(PHAssetCollectionSubtypeSmartAlbumAnimated)
                                                 
                                                 }), PHCollectionListSubtypeAny, integerValue)
 
