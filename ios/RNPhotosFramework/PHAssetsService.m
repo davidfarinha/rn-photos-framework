@@ -58,6 +58,31 @@
     return [PHAsset fetchAssetsWithOptions:options];
 }
 
+
++ (NSArray<NSString *> *)_stringifyMediaSubtypes:(PHAssetMediaSubtype)mediaSubtypes
+{
+  NSMutableArray *subtypes = [NSMutableArray new];
+  NSMutableDictionary<NSString *, NSNumber *> *subtypesDict = [@{
+                                                               @"hdr": @(PHAssetMediaSubtypePhotoHDR),
+                                                               @"panorama": @(PHAssetMediaSubtypePhotoPanorama),
+                                                               @"stream": @(PHAssetMediaSubtypeVideoStreamed),
+                                                               @"timelapse": @(PHAssetMediaSubtypeVideoTimelapse),
+                                                               @"screenshot": @(PHAssetMediaSubtypePhotoScreenshot),
+                                                               @"highFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate)
+                                                               } mutableCopy];
+
+  subtypesDict[@"livePhoto"] = @(PHAssetMediaSubtypePhotoLive);
+  subtypesDict[@"depthEffect"] = @(PHAssetMediaSubtypePhotoDepthEffect);
+
+  for (NSString *subtype in subtypesDict) {
+    if (mediaSubtypes & [subtypesDict[subtype] unsignedIntegerValue]) {
+      [subtypes addObject:subtype];
+    }
+  }
+  return subtypes;
+}
+
+
 +(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeResourcesMetadata {
     RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager assetsArrayToUriArray", nil);
 
@@ -74,10 +99,16 @@
             asset = assetWithCollectionIndex.asset;
             assetIndex = assetWithCollectionIndex.collectionIndex;
         }
+        
+        NSString* mediaSubTypes = [PHAssetsService _stringifyMediaSubtypes:asset.mediaSubtypes];
 
         NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                              [asset localIdentifier], @"localIdentifier",
                                              @([asset pixelWidth]), @"width",
+                                             @([asset sourceType]), @"sourceType",
+                                             
+                                             mediaSubTypes, @"mediaSubtypes",
+                                             
                                              @([asset pixelHeight]), @"height",
                                              @([RNPFHelpers getTimeSince1970:[asset creationDate]]), @"creationDateUTCSeconds",
 											 // [30/11/21]: TODO: Adding in isFavourite here, but this may affect performance. But implement a separarte flag in the getAsset options for partial scan r full scan. If partial scan, make this asset obkect as lean as possible stripping out
@@ -107,7 +138,7 @@
 }
 
 +(NSMutableDictionary *)extendAssetDictWithAssetMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
-NSLog( @"extendAssetDictWithAssetMetadata%@", asset );
+
     [dictToExtend setObject:@([RNPFHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDateUTCSeconds"];
     [dictToExtend setObject:@([RNPFHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDateUTCSeconds"];
     [dictToExtend setObject:[RNPFHelpers CLLocationToJson:[asset location]] forKey:@"location"];
@@ -147,21 +178,40 @@ NSLog( @"extendAssetDictWithAssetMetadata%@", asset );
     for(int i = 0; i < resources.count;i++) {
         PHAssetResource *resourceMetadata = [resources objectAtIndex:i];
         
+       
+        
         NSString *mimeType = (NSString *)[NSNull null];
         CFStringRef mimeTypeCString = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(resourceMetadata.uniformTypeIdentifier), kUTTagClassMIMEType);
         if(mimeTypeCString != nil) {
             mimeType = (__bridge NSString *)(mimeTypeCString);
         }
         
+        NSNumber *fileSize = [resourceMetadata valueForKey:@"fileSize"];
+        BOOL locallyAvailable = [resourceMetadata valueForKey:@"locallyAvailable"];
+        NSString *type = [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)];
+        
+        // [14/08/22]: Adding this to fix crashes on Portait photo sweep delete to preload asset metadata
+        if (type == nil) {
+            continue;
+        }
+        
+//
+//        if (resourceMetadata.originalFilename == nil || resourceMetadata.assetLocalIdentifier == nil || fileSize == nil || type == nil) {
+//            continue;
+//        }
+        NSLog( @"extendAssetDictWithAssetMetadata%@", resourceMetadata.originalFilename );
         [arrayWithResourcesMetadata addObject:@{
                                                      @"originalFilename" : resourceMetadata.originalFilename,
                                                      @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
-													 @"fileSize": [resourceMetadata valueForKey:@"fileSize"],
+													 @"fileSize": fileSize,
+                                                     @"locallyAvailable": @(locallyAvailable),
                                                      @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
-                                                     @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
-                                                     @"mimeType" : mimeType,
-                                                     @"fileExtension" : [resourceMetadata.originalFilename pathExtension]
-                                                     }];
+                                                     @"type" : type,
+//                                                     @"mimeType" : mimeType,
+//                                                     @"fileExtension" : [resourceMetadata.originalFilename pathExtension]
+//
+                                                     
+        }];
     }
 
     [dictToExtend setObject:arrayWithResourcesMetadata forKey:@"resourcesMetadata"];

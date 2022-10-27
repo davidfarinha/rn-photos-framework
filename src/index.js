@@ -101,6 +101,10 @@ class RNPhotosFramework {
     ) {
       params.assetDisplayStartToEnd = true;
     }
+
+    if (params.assetDisplayStartToEnd === undefined && (params.fetchOptions.sortDescriptors?.[0]?.key === 'creationDate' && params.fetchOptions.sortDescriptors?.[0]?.ascending === false)) {
+      params.assetDisplayStartToEnd = false;
+    }
     return RNPFManager.getAssets(params).then(assetsResponse => {
       return {
         assets: assetsResponse.assets.map(this.createJsAsset),
