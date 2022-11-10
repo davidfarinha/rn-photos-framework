@@ -142,6 +142,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     NSString *startIndexParam = params[@"startIndex"];
     NSString *endIndexParam = params[@"endIndex"];
     BOOL includeMetadata = [RCTConvert BOOL:params[@"includeMetadata"]];
+    BOOL includeInAlbumsMetadata = [RCTConvert BOOL:params[@"includeInAlbumsMetadata"]];
     BOOL includeResourcesMetadata = [RCTConvert BOOL:params[@"includeResourcesMetadata"]];
     
     
@@ -158,7 +159,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     NSInteger assetCount = assetsFetchResult.count;
     BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);
     return resolve(@{
-                     @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata],
+        @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata andIncludeInAlbumsMetadata: includeInAlbumsMetadata],
                      @"includesLastAsset" : @(includesLastAsset),
 					 @"assetCount" : @(assetCount),
                      });
@@ -176,7 +177,7 @@ RCT_EXPORT_METHOD(getAssetsWithIndecies:(NSDictionary *)params
     NSArray<PHAssetWithCollectionIndex *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult atIndecies:[RCTConvert NSArray:params[@"indecies"]]];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
     resolve(@{
-              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata],
+              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata andIncludeInAlbumsMetadata:NO],
               });
 }
 
@@ -634,7 +635,7 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
         BOOL includeResourcesMetadata = [RCTConvert BOOL:params[@"includeResourcesMetadata"]];
         
         PHFetchResult<PHAsset *> *newAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentfiers];
-        NSArray<NSDictionary *> *assetResponse = [PHAssetsService assetsArrayToUriArray:(NSArray<id> *)newAssets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata];
+        NSArray<NSDictionary *> *assetResponse = [PHAssetsService assetsArrayToUriArray:(NSArray<id> *)newAssets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata andIncludeInAlbumsMetadata:NO];
         return resolve(@{@"assets" : assetResponse, @"success" : @(YES) });
         
     } andProgressBlock:^(NSString *uri, int index, int64_t progress, int64_t total) {

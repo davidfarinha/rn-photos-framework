@@ -78,7 +78,7 @@
                             BOOL includeMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetadata"]];
                             BOOL includeResourcesMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeResourcesMetadata"]];
 
-                            NSDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata] objectAtIndex:0];
+                            NSDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata andIncludeInAlbumsMetadata:NO] objectAtIndex:0];
                             NSNumber *collectionIndex = [insertedIndexes objectAtIndex:i];
                             NSMutableDictionary *mutableInsertedDict = [insertedObject mutableCopy];
                             [mutableInsertedDict setObject:collectionIndex forKey:@"collectionIndex"];
@@ -112,7 +112,7 @@
 
                             BOOL includeMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetadata"]];
                             BOOL includeResourcesMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeResourcesMetadata"]];
-                            NSDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata] objectAtIndex:0];
+                            NSDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata andIncludeInAlbumsMetadata:NO] objectAtIndex:0];
                             NSNumber *collectionIndex = [changedIndexes objectAtIndex:i];
                             NSMutableDictionary *mutableChangedDict = [changedObject mutableCopy];
                             [mutableChangedDict setObject:collectionIndex forKey:@"collectionIndex"];

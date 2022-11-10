@@ -68,7 +68,8 @@
                                                                @"stream": @(PHAssetMediaSubtypeVideoStreamed),
                                                                @"timelapse": @(PHAssetMediaSubtypeVideoTimelapse),
                                                                @"screenshot": @(PHAssetMediaSubtypePhotoScreenshot),
-                                                               @"highFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate)
+                                                               @"highFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate),
+                                                               @"cinematic": @(PHAssetMediaSubtypeVideoCinematic)
                                                                } mutableCopy];
 
   subtypesDict[@"livePhoto"] = @(PHAssetMediaSubtypePhotoLive);
@@ -83,7 +84,7 @@
 }
 
 
-+(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeResourcesMetadata {
++(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeResourcesMetadata andIncludeInAlbumsMetadata:(BOOL)includeInAlbumsMetadata {
     RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager assetsArrayToUriArray", nil);
 
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
@@ -100,15 +101,14 @@
             assetIndex = assetWithCollectionIndex.collectionIndex;
         }
         
-        NSString* mediaSubTypes = [PHAssetsService _stringifyMediaSubtypes:asset.mediaSubtypes];
-
+        
         NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                              [asset localIdentifier], @"localIdentifier",
                                              @([asset pixelWidth]), @"width",
                                              @([asset sourceType]), @"sourceType",
+                                             //mediaSubTypes, @"mediaSubtypes",
                                              
-                                             mediaSubTypes, @"mediaSubtypes",
-                                             
+                                             @([asset pixelHeight]), @"height",
                                              @([asset pixelHeight]), @"height",
                                              @([RNPFHelpers getTimeSince1970:[asset creationDate]]), @"creationDateUTCSeconds",
 											 // [30/11/21]: TODO: Adding in isFavourite here, but this may affect performance. But implement a separarte flag in the getAsset options for partial scan r full scan. If partial scan, make this asset obkect as lean as possible stripping out
@@ -120,6 +120,19 @@
         
         if([asset mediaType] == PHAssetMediaTypeVideo || [asset mediaType] == PHAssetMediaTypeAudio) {
             [responseDict setObject:@([asset duration]) forKey:@"duration"];
+        }
+        
+        if(includeInAlbumsMetadata) {
+            PHFetchResult<PHCollection *> *albums = [PHAssetCollection fetchAssetCollectionsContainingAsset:asset withType:PHAssetCollectionTypeAlbum  options:nil];
+            NSMutableArray<NSString *> *albumNames = [NSMutableArray array];
+            
+            
+            for(PHAssetCollection *album in albums) {
+                    [albumNames addObject: album.localizedTitle];
+                
+            }
+
+            [responseDict setObject:albumNames forKey:@"inAlbums"];
         }
 
         if(includeMetadata) {
