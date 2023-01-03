@@ -108,7 +108,7 @@
                                              @([asset sourceType]), @"sourceType",
                                              //mediaSubTypes, @"mediaSubtypes",
                                              
-                                             @([asset pixelHeight]), @"height",
+                                             @([asset isHidden]), @"isHidden",
                                              @([asset pixelHeight]), @"height",
                                              @([RNPFHelpers getTimeSince1970:[asset creationDate]]), @"creationDateUTCSeconds",
 											 // [30/11/21]: TODO: Adding in isFavourite here, but this may affect performance. But implement a separarte flag in the getAsset options for partial scan r full scan. If partial scan, make this asset obkect as lean as possible stripping out
@@ -123,7 +123,11 @@
         }
         
         if(includeInAlbumsMetadata) {
-            PHFetchResult<PHCollection *> *albums = [PHAssetCollection fetchAssetCollectionsContainingAsset:asset withType:PHAssetCollectionTypeAlbum  options:nil];
+            PHFetchOptions *fetchOptions = [PHFetchOptions new];
+            fetchOptions.includeAllBurstAssets = YES;
+            fetchOptions.predicate = [NSPredicate predicateWithFormat:@"(mediaSubtype == %d)", PHAssetCollectionSubtypeSmartAlbumUserLibrary];
+            fetchOptions.fetchLimit = 100000;
+            PHFetchResult<PHCollection *> *albums = [PHAssetCollection fetchAssetCollectionsContainingAsset:asset withType:PHAssetCollectionTypeAlbum  options: nil];
             NSMutableArray<NSString *> *albumNames = [NSMutableArray array];
             
             
@@ -212,7 +216,6 @@
 //        if (resourceMetadata.originalFilename == nil || resourceMetadata.assetLocalIdentifier == nil || fileSize == nil || type == nil) {
 //            continue;
 //        }
-        NSLog( @"extendAssetDictWithAssetMetadata%@", resourceMetadata.originalFilename );
         [arrayWithResourcesMetadata addObject:@{
                                                      @"originalFilename" : resourceMetadata.originalFilename,
                                                      @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,

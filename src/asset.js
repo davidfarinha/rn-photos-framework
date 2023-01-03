@@ -15,6 +15,7 @@ function copyAssetMethods(asset, newProps) {
 		delete: asset.delete,
 		setHidden: asset.setHidden,
 		setCreationDate: asset.setCreationDate,
+        // inAlbums: asset.inAlbums,
 		setLocation: asset.setLocation,
 		saveAssetToDisk: asset.saveAssetToDisk,
 		_updateProperty: asset._updateProperty,
@@ -149,9 +150,9 @@ export default class Asset {
     //     return NativeApi.deleteAssets([this]);
     // }
 
-    // setHidden(hidden) {
-    //     return this._updateProperty('hidden', hidden, true);
-    // }
+    setHidden(hidden) {
+        return this._updateProperty('hidden', hidden, true);
+    }
 
     setFavorite(favorite) {
         return this._updateProperty('favorite', favorite, true);
